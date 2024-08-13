@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "933061962046",
+    "project_id": "travel-journal-app-360ac",
+    "storage_bucket": "travel-journal-app-360ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933061962046:android:9e81c1d83151fcca25a46f",
+        "android_client_info": {
+          "package_name": "com.tokagames.travelchronicle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcFE_gXxgPote-HUN7UK6Vu9zz-h6KsWc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
