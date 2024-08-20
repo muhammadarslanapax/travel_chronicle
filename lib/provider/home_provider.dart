@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:travel_chronicle/data/localDB/event/event_model.dart';
+import 'package:travel_chronicle/data/localDB/local_db.dart';
 import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/models/event_model.dart';
 import 'package:travel_chronicle/utilities/app_consts.dart';
@@ -18,6 +21,16 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> fetchEvents() async {
+    final cloudSub = await storage.isCloundSubscription();
+
+    // cloudSub != null ?
+    
+     await fetchEventsfromApi() ;
+    
+    //  await fetchEventsfromLocal();
+  }
+
+  Future<void> fetchEventsfromApi() async {
     try {
       var loadedEvents = await eventRepository.getAllMyEvent();
       if (loadedEvents != null) {
@@ -28,6 +41,35 @@ class HomeProvider extends ChangeNotifier {
           print(events.length);
         }
       }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching events: $e');
+      }
+    }
+  }
+
+  Future<void> fetchEventsfromLocal() async {
+    try {
+      var loadedEvents = await HiveService.getAllEvents();
+
+      _events = loadedEvents.map((model) {
+        return EventModel(
+          timestamp: model.timestamp,
+          name: model.name,
+          images: model.images!,
+          dateStart: model.dateStart,
+          aboutTrip: model.aboutTrip,
+          companionsNames: model.companionsNames,
+          dateEnd: model.dateEnd,
+          hotelName: model.hotelName,
+          imageTitle: model.imageTitle,
+          location: model.location,
+          placeName: model.placeName,
+          stamp: model.stamp,
+          tripName: model.tripName,
+        );
+      }).toList();
+      notifyListeners();
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching events: $e');
@@ -97,7 +139,4 @@ class HomeProvider extends ChangeNotifier {
           },
         ));
   }
-
-
-
 }

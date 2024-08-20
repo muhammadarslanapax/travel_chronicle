@@ -49,16 +49,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Text(
                         storage.user!.userName,
-                        style: thirteenBoldSpacedTextStyle(
+                        style: fifteen700TextStyle(
                           color: textBrownColor,
                         ),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      // const SizedBox(
+                      //   height: 5,
+                      // ),
                       Text(
-                        "${storage.user!.city ?? "" + ","}${storage.user!.country ?? "No Location Added"}",
-                        style: eleven400SpacedTextStyle(
+                        "${storage.user!.city ?? ""}, ${storage.user!.country ?? "No Location Added"}",
+                        style: thirteen400SpacedTextStyle(
                           color: textBrownColor,
                         ),
                       ),
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 10,
+                                  width: 20,
                                 ),
                                 GestureDetector(
                                   onTap: () {
@@ -127,11 +127,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: NetworkImage(
-                                provider.localUser!.userImg,
-                              ),
-                              fit: BoxFit.cover,
-                            ),
+                                image: NetworkImage(
+                                  provider.localUser!.userImg,
+                                ),
+                                fit: BoxFit.cover),
                           ),
                         );
                       } else {

@@ -1,8 +1,15 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:purchases_flutter/models/customer_info_wrapper.dart';
+import 'package:purchases_flutter/models/package_wrapper.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:travel_chronicle/data/purchase_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../global_widgets/app_bar_widget.dart';
@@ -18,6 +25,13 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  List<Package> packages = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     text: "Shop",
                     onTap: () {
                       Navigator.pushNamed(context, subscriptionScreenRoute);
+                      
                     },
                   ),
                   SettingsRowWidget(
@@ -142,4 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     Share.share(message);
   }
+
+  
+
 }

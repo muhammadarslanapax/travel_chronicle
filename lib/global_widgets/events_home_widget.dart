@@ -1,7 +1,12 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/provider/home_provider.dart';
 import 'package:travel_chronicle/utilities/app_colors.dart';
 import 'package:travel_chronicle/utilities/app_routes.dart';
@@ -51,9 +56,11 @@ class YearTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final widht = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Container(
-      width: 80,
-      height: 80,
+      width: widht * 0.22,
+      height: widht * 0.22,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: darkSkinColor,
@@ -63,7 +70,7 @@ class YearTile extends StatelessWidget {
         "${year.substring(0, 2)}\n${year.substring(2, 4)}",
         style: TextStyle(
           color: brownColor,
-          fontSize: 25,
+          fontSize: 30,
           fontFamily: GoogleFonts.purplePurse().fontFamily,
         ),
         textAlign: TextAlign.center,
@@ -72,33 +79,57 @@ class YearTile extends StatelessWidget {
   }
 }
 
-class EventTile extends StatelessWidget {
+class EventTile extends StatefulWidget {
   final EventModel event;
 
-  const EventTile({super.key, required this.event});
+  const EventTile({
+    Key? key,
+    required this.event,
+  }) : super(key: key);
+
+  @override
+  State<EventTile> createState() => _EventTileState();
+}
+
+class _EventTileState extends State<EventTile> {
+  bool? isCloundSubscription;
+
+  @override
+  void initState() {
+    getCloundSubscription();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    String date = DateFormat('MMM dd').format(DateTime.fromMillisecondsSinceEpoch(event.timestamp));
+    String date = DateFormat('MMM dd').format(DateTime.fromMillisecondsSinceEpoch(widget.event.timestamp));
     final widht = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
     return GestureDetector(
       onTap: () {
-        context.read<HomeProvider>().setEventModel(event);
+        context.read<HomeProvider>().setEventModel(widget.event);
 
         Navigator.pushNamed(context, tripDetailsScreenRoute);
       },
       child: Container(
         width: widht * 0.22,
         height: widht * 0.22,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          image: DecorationImage(
-            image: NetworkImage(event.images.first),
-            fit: BoxFit.cover,
-          ),
-        ),
+        decoration: isCloundSubscription != null
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                image: DecorationImage(
+                  image: NetworkImage(widget.event.images.first),
+                  fit: BoxFit.cover,
+                ),
+              )
+            : BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                image: DecorationImage(
+                  image: FileImage(File(widget.event.images.first)),
+                  fit: BoxFit.cover,
+                ),
+              ),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: Container(
@@ -116,7 +147,7 @@ class EventTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  event.name,
+                  widget.event.name,
                   style: eight700TextStyle(
                     color: Colors.white,
                   ),
@@ -134,5 +165,9 @@ class EventTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> getCloundSubscription() async {
+    isCloundSubscription = await storage.isCloundSubscription();
   }
 }

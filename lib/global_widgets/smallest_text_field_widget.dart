@@ -12,6 +12,7 @@ class SmallestTextFieldWidget extends StatefulWidget {
   final int maxLines;
   final bool readOnly;
   final VoidCallback? onTap;
+  final double? cPadding;
 
   const SmallestTextFieldWidget(
       {super.key,
@@ -23,11 +24,11 @@ class SmallestTextFieldWidget extends StatefulWidget {
       required this.obscureText,
       this.suffixIcon,
       this.prefixIcon,
-      this.onTap});
+      this.onTap,
+      this.cPadding});
 
   @override
-  State<SmallestTextFieldWidget> createState() =>
-      _SmallestTextFieldWidgetState();
+  State<SmallestTextFieldWidget> createState() => _SmallestTextFieldWidgetState();
 }
 
 class _SmallestTextFieldWidgetState extends State<SmallestTextFieldWidget> {
@@ -49,9 +50,9 @@ class _SmallestTextFieldWidgetState extends State<SmallestTextFieldWidget> {
         decoration: InputDecoration(
           suffixIcon: widget.suffixIcon,
           prefixIcon: widget.prefixIcon,
-          contentPadding: const EdgeInsets.symmetric(
+          contentPadding: EdgeInsets.symmetric(
             horizontal: 5,
-            vertical: 15,
+            vertical: widget.cPadding ?? 15,
           ),
           hintStyle: const TextStyle(
             color: Colors.grey,

@@ -14,16 +14,14 @@ class UserApi implements IUserRepository {
   final user = FirebaseFirestore.instance;
   final _firebaseAuth = FirebaseAuth.instance;
 
-  final CollectionReference<UserModel> usersRef = FirebaseFirestore.instance
-      .collection('users')
-      .withConverter<UserModel>(
-        fromFirestore: (snapshot, _) => UserModel.fromJson(snapshot.data()!),
-        toFirestore: (user, _) => user.toJson(),
-      );
+  final CollectionReference<UserModel> usersRef =
+      FirebaseFirestore.instance.collection('users').withConverter<UserModel>(
+            fromFirestore: (snapshot, _) => UserModel.fromJson(snapshot.data()!),
+            toFirestore: (user, _) => user.toJson(),
+          );
 
   @override
-  Future<UserModel?> get(String documentId) =>
-      usersRef.doc(documentId).get().then((s) => s.data());
+  Future<UserModel?> get(String documentId) => usersRef.doc(documentId).get().then((s) => s.data());
 
   @override
   Future<void> add(UserModel user) => usersRef.doc(user.userId).set(user);
@@ -40,8 +38,7 @@ class UserApi implements IUserRepository {
   Future<void> login(String email, String password) async {
     EasyLoading.show(status: 'please wait...');
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
       EasyLoading.dismiss();
     } on FirebaseAuthException catch (e) {
       EasyLoading.dismiss();
@@ -69,8 +66,7 @@ class UserApi implements IUserRepository {
   Future<void> signUp(String email, String password) async {
     EasyLoading.show(status: 'please wait...');
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
       EasyLoading.dismiss();
     } on FirebaseAuthException catch (e) {
       EasyLoading.dismiss();
@@ -90,15 +86,6 @@ class UserApi implements IUserRepository {
     }
   }
 
-
-
-  
-
-
-
-
-
-
   @override
   User? getCurrentUser() {
     return _firebaseAuth.currentUser;
@@ -111,12 +98,34 @@ class UserApi implements IUserRepository {
 
   @override
   Future<String> uploadFile(File image) async {
-    Reference reference = FirebaseStorage.instance
-        .ref()
-        .child('/${DateTime.now().millisecondsSinceEpoch.toString()}');
+    Reference reference = FirebaseStorage.instance.ref().child('/${DateTime.now().millisecondsSinceEpoch.toString()}');
     await reference.putFile(image);
     return await reference.getDownloadURL();
   }
-  
- 
+
+  @override
+  Future<void> changePassword(String newPassword) async {
+    EasyLoading.show(status: 'please wait...');
+    try {
+      await _firebaseAuth.currentUser!.updatePassword(newPassword);
+
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("successfully password updated!");
+    } on FirebaseAuthException catch (e) {
+      EasyLoading.dismiss();
+      if (e.code == 'weak-password') {
+        EasyLoading.showError("The password provided is too weak.");
+        throw Exception('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        EasyLoading.showError("The account already exists for that email.");
+        throw Exception('The account already exists for that email.');
+      } else {
+        EasyLoading.showError(e.toString());
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError(e.toString());
+      throw Exception(e.toString());
+    }
+  }
 }

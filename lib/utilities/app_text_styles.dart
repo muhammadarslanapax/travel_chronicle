@@ -4,6 +4,18 @@ import 'package:google_fonts/google_fonts.dart';
 thirteenBoldSpacedTextStyle({required color}) {
   return TextStyle(
     fontSize: 13,
+    color: color,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 2.5,
+    fontFamily: GoogleFonts.poppins(
+      fontWeight: FontWeight.bold,
+    ).fontFamily,
+  );
+}
+
+fefteenBoldSpacedTextStyle({required color}) {
+  return TextStyle(
+    fontSize: 15,
     fontWeight: FontWeight.bold,
     letterSpacing: 2.5,
     fontFamily: GoogleFonts.poppins(
@@ -23,9 +35,31 @@ eleven400SpacedTextStyle({required color}) {
   );
 }
 
+thirteen400SpacedTextStyle({required color}) {
+  return TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 2.5,
+    fontFamily: GoogleFonts.poppins(
+      fontWeight: FontWeight.w400,
+    ).fontFamily,
+  );
+}
+
 eleven400TextStyle({required color}) {
   return TextStyle(
     fontSize: 11,
+    color: color,
+    fontWeight: FontWeight.w400,
+    fontFamily: GoogleFonts.poppins(
+      fontWeight: FontWeight.w400,
+    ).fontFamily,
+  );
+}
+
+thirteen400TextStyle({required color}) {
+  return TextStyle(
+    fontSize: 13,
     color: color,
     fontWeight: FontWeight.w400,
     fontFamily: GoogleFonts.poppins(

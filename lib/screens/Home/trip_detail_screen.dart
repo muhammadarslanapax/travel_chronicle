@@ -2,6 +2,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/models/event_model.dart';
 import 'package:travel_chronicle/provider/delete_provider.dart';
 import 'package:travel_chronicle/provider/edit_provider.dart';
@@ -71,7 +72,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         ),
                       ),
                       Text(
-                        _eventModel.hotelName!,
+                        _eventModel.imageTitle!,
                         style: fifteen500TextStyle(
                           color: Colors.white,
                         ),
@@ -127,7 +128,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                               Container(
                                 width: 45,
                                 height: 45,
-                                decoration: BoxDecoration(
+                                decoration: 
+                                
+                                
+                                
+                                BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
                                     image: NetworkImage(_eventModel.userImage!),
@@ -226,7 +231,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Graduation Trip",
+                                  _eventModel.name,
                                   style: twelve600TextStyle(color: textBrownColor),
                                 ),
                                 TripDetailsRowWidget(
@@ -259,7 +264,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                     for (var i in _eventModel.companionsNames!)
                                       Text(
                                         i,
-                                        style: eleven400TextStyle(color: textBrownColor),
+                                        style: thirteen400TextStyle(color: textBrownColor),
                                       )
                                   ],
                                 )
@@ -285,7 +290,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 3),
                         child: Text(
                           _eventModel.aboutTrip!,
-                          style: eleven400TextStyle(color: textBrownColor),
+                          style: thirteen400TextStyle(color: textBrownColor),
                         ),
                       ),
                     ],
@@ -296,8 +301,14 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           ],
         ),
       ),
+      
     );
+
+
+    
   }
+
+   
 
   void showDeleteConfirmationDialog(BuildContext context, String id) {
     showDialog(

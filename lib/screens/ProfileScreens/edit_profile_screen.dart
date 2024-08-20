@@ -45,6 +45,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        child: BigButton(
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: 45,
+          text: "SAVE",
+          onTap: () {
+            updateUser(context);
+          },
+          textStyle: eighteenBoldTextStyle(color: Colors.white),
+        ),
+      ),
       backgroundColor: skinColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,15 +171,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                     ),
                     const Spacer(),
-                    BigButton(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      height: 45,
-                      text: "SAVE",
-                      onTap: () {
-                        updateUser(context);
-                      },
-                      textStyle: eighteenBoldTextStyle(color: Colors.white),
-                    ),
                     const SizedBox(
                       height: 50,
                     ),

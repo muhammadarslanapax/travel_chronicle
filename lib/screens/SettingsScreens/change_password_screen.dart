@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:travel_chronicle/global_widgets/events_home_widget.dart';
+import 'package:travel_chronicle/provider/change_password_provider.dart';
 import 'package:travel_chronicle/utilities/app_colors.dart';
 import 'package:travel_chronicle/utilities/validator.dart';
 
@@ -40,32 +43,32 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      TextFieldWidget(
-                        validator: (value) {
-                          return Validator.nameValidator(value);
-                        },
-                        textFieldController: _oldPsdController,
-                        prefixIcon: Image.asset(
-                          "assets/lockIcon.png",
-                          scale: 4,
-                        ),
-                        hintText: "Enter old password",
-                        obscureText: obscureText1,
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            obscureText1 = !obscureText1;
-                            setState(() {});
-                          },
-                          child: Icon(
-                            obscureText1 == true ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
-                            color: Colors.grey,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      // TextFieldWidget(
+                      //   validator: (value) {
+                      //     return Validator.nameValidator(value);
+                      //   },
+                      //   textFieldController: _oldPsdController,
+                      //   prefixIcon: Image.asset(
+                      //     "assets/lockIcon.png",
+                      //     scale: 4,
+                      //   ),
+                      //   hintText: "Enter old password",
+                      //   obscureText: obscureText1,
+                      //   suffixIcon: GestureDetector(
+                      //     onTap: () {
+                      //       obscureText1 = !obscureText1;
+                      //       setState(() {});
+                      //     },
+                      //     child: Icon(
+                      //       obscureText1 == true ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
+                      //       color: Colors.grey,
+                      //       size: 25,
+                      //     ),
+                      //   ),
+                      // ),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
                       TextFieldWidget(
                         validator: (value) {
                           return Validator.passwordValidator(value);
@@ -89,29 +92,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      TextFieldWidget(
-                        validator: (value) {
-                          return Validator.confirmPasswordValidator(value, _newPsdController.text);
-                        },
-                        textFieldController: _configPsdController,
-                        prefixIcon: Image.asset(
-                          "assets/lockIcon.png",
-                          scale: 4,
-                        ),
-                        hintText: "Re enter new password",
-                        obscureText: obscureText3,
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            obscureText3 = !obscureText3;
-                            setState(() {});
-                          },
-                          child: Icon(
-                            obscureText3 == true ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
-                            color: Colors.grey,
-                            size: 25,
-                          ),
-                        ),
-                      ),
+                      // TextFieldWidget(
+                      //   validator: (value) {
+                      //     return Validator.confirmPasswordValidator(value, _newPsdController.text);
+                      //   },
+                      //   textFieldController: _configPsdController,
+                      //   prefixIcon: Image.asset(
+                      //     "assets/lockIcon.png",
+                      //     scale: 4,
+                      //   ),
+                      //   hintText: "Re enter new password",
+                      //   obscureText: obscureText3,
+                      //   suffixIcon: GestureDetector(
+                      //     onTap: () {
+                      //       obscureText3 = !obscureText3;
+                      //       setState(() {});
+                      //     },
+                      //     child: Icon(
+                      //       obscureText3 == true ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
+                      //       color: Colors.grey,
+                      //       size: 25,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -122,7 +125,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 height: 45,
                 text: "SAVE",
                 onTap: () {
-                  changePassword(context);
+                  changePassword(context, _newPsdController.text);
                 },
                 textStyle: eighteenBoldTextStyle(color: Colors.white),
               ),
@@ -136,7 +139,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  Future<void> changePassword(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {}
+  Future<void> changePassword(BuildContext context, String newPassword) async {
+    if (_formKey.currentState!.validate()) {
+      context.read<ChangePasswordProvider>().changePassword(newPassword);
+    }
   }
 }

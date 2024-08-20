@@ -74,12 +74,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    context.read<UserProvider>().logout();
+                                    
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       loginScreenRoute,
                                       (route) => false,
                                     );
+                                    context.read<UserProvider>().logout();
                                   },
                                   child: const SizedBox(
                                     width: 30,

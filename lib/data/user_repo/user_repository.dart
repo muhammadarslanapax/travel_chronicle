@@ -9,6 +9,7 @@ abstract class IUserRepository {
   Future<void> signUp(String email, String password);
   Future<void> login(String email, String password);
   Future<void> add(UserModel user);
+  Future<void> changePassword(String newPassword);
   
   Future<void> update(String documentId, Map<String, dynamic> map);
 

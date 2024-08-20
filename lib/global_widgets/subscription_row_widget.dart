@@ -20,6 +20,8 @@ class SubscriptionsRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final widht = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -46,8 +48,8 @@ class SubscriptionsRowWidget extends StatelessWidget {
                 color: isExclusive == true ? Colors.white : textBrownColor,
               ),
             ),
-            const SizedBox(
-              height: 5,
+            SizedBox(
+              height: height * 0.005,
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,9 +61,7 @@ class SubscriptionsRowWidget extends StatelessWidget {
                       Text(
                         details,
                         style: eleven400TextStyle(
-                          color: isExclusive == true
-                              ? Colors.white
-                              : textBrownColor,
+                          color: isExclusive == true ? Colors.white : textBrownColor,
                         ),
                       ),
                     ],
@@ -73,15 +73,13 @@ class SubscriptionsRowWidget extends StatelessWidget {
                     Text(
                       price,
                       style: twenty500TextStyle(
-                        color:
-                            isExclusive == true ? Colors.white : textBrownColor,
+                        color: isExclusive == true ? Colors.white : textBrownColor,
                       ),
                     ),
                     Text(
                       "One-time charge",
                       style: eleven400TextStyle(
-                        color:
-                            isExclusive == true ? Colors.white : textBrownColor,
+                        color: isExclusive == true ? Colors.white : textBrownColor,
                       ),
                     ),
                   ],

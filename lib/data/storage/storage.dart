@@ -7,4 +7,8 @@ abstract class IStorage {
   UserModel? get user;
   Future<bool> removeUser();
   List<UserModel> getAllUsers();
+
+  Future<void> setCloundSubscription();
+    Future<bool?> isCloundSubscription();
+
 }

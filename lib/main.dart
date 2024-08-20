@@ -1,8 +1,16 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_chronicle/data/localDB/event/event_model.dart';
+import 'package:travel_chronicle/data/localDB/local_db.dart';
+import 'package:travel_chronicle/data/purchase_api.dart';
+import 'package:travel_chronicle/provider/change_password_provider.dart';
 import 'package:travel_chronicle/provider/delete_provider.dart';
 import 'package:travel_chronicle/provider/edit_provider.dart';
 import 'package:travel_chronicle/provider/home_provider.dart';
@@ -15,6 +23,7 @@ import 'package:travel_chronicle/screens/Authentication/login_screen.dart';
 import 'package:travel_chronicle/screens/Authentication/signup_screen.dart';
 import 'package:travel_chronicle/screens/Authentication/splash_screen.dart';
 import 'package:travel_chronicle/screens/Home/add_trip_screen.dart';
+
 import 'package:travel_chronicle/screens/Home/edit_trip_screen.dart';
 import 'package:travel_chronicle/screens/Home/home_screen.dart';
 import 'package:travel_chronicle/screens/Home/passport_book_screen.dart';
@@ -32,10 +41,12 @@ import 'package:travel_chronicle/utilities/app_routes.dart';
 
 import 'data/locator.dart';
 
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  Directory directory = await getApplicationDocumentsDirectory();
+  Hive.init(directory.path);
+  Hive.registerAdapter(EventLocalDBModelAdapter());
 
   await Firebase.initializeApp(
     options: const FirebaseOptions(
@@ -48,7 +59,7 @@ main() async {
   );
   DependencyInjectionEnvironment.setup();
   await storage.init();
-  MobileAds.instance.initialize();
+  await PurchaseApi.initPlatformState();
 
   runApp(const MyApp());
 }
@@ -82,6 +93,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => DeleteProvider()),
         ChangeNotifierProvider(create: (_) => PassportProvider()),
         ChangeNotifierProvider(create: (_) => LocationProvider()),
+        ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
