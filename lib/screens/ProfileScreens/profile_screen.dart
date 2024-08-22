@@ -127,6 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             image: DecorationImage(
                               image: NetworkImage(provider.localUser!.userImg),
                               fit: BoxFit.cover,
+                              
                             ),
                           ),
                         );

@@ -28,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<LocationProvider>().checkAndRequestPermission();
   }
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -215,6 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                                 image: NetworkImage(
+                                  scale: 1,
                                   provider.localUser!.userImg,
                                 ),
                                 fit: BoxFit.cover),
@@ -280,8 +280,6 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-        
-
           const BannerAD(),
         ],
       ),

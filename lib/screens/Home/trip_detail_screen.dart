@@ -427,8 +427,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
             TextButton(
               child: const Text("Delete"),
               onPressed: () {
-                Navigator.of(context).pop();
+               
                 context.read<DeleteProvider>().deleteEvent(context, id);
+                context.read<HomeProvider>().fetchEvents();
               },
             ),
           ],
