@@ -78,9 +78,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       context,
                                       loginScreenRoute,
                                       (route) => false,
-                                    ).then((val) {
-                                      context.read<UserProvider>().logout();
-                                    });
+                                    );
+                                    context.read<UserProvider>().logout();
                                   },
                                   child: const SizedBox(
                                     width: 30,
@@ -126,7 +125,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               image: NetworkImage(provider.localUser!.userImg),
-                              fit: BoxFit.cover,
                               
                             ),
                           ),

@@ -221,7 +221,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               city: city,
               cloudSubscription: false,
               extraPhotoSubscription: false,
-              allSubscription: false,
               exportPdfSubscription: false,
               skinColorSubscription: false,
               unlimitedTripSubscription: false,

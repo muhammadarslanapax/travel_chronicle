@@ -52,7 +52,9 @@ class _SubscriptionDetailScreenState extends State<SubscriptionDetailScreen> {
                         ? "unlockPassportSubscription"
                         : subscription == 6
                             ? "exportPdfSubscription"
-                            : "allSubscription";
+                            : subscription == 7
+                                ? "allSubscription"
+                                : "";
 
     return Scaffold(
       backgroundColor: skinColor,
@@ -177,22 +179,38 @@ class _SubscriptionDetailScreenState extends State<SubscriptionDetailScreen> {
   }
 
   _purchasePlan(String subscription) async {
-    log("subscription name is ${subscription}");
     try {
       //  CustomerInfo purchaserInfo = await Purchases.purchasePackage(package);
       // var isPro = purchaserInfo.entitlements.all["premium_travel_app_images_upload"]?.isActive;
       // if (isPro ?? false) {
-      await userRepository.update(storage.user!.userId, {subscription: true}).then((value) async {
-        // ignore: use_build_context_synchronously
-        await context.read<UserProvider>().updateFirebaseUser();
-        EasyLoading.showSuccess("Subscription successfully buy");
+      if (subscription != "allSubscription") {
+        await userRepository.update(storage.user!.userId, {subscription: true}).then((value) async {
+          // ignore: use_build_context_synchronously
+          await context.read<UserProvider>().updateFirebaseUser();
+          EasyLoading.showSuccess("Subscription successfully buy");
 
-        if (subscription == "cloudSubscription") {
-          context.read<HomeProvider>().addLocalTriptoFirebase(context);
-        } else {
+          if (subscription == "cloudSubscription") {
+            context.read<HomeProvider>().addLocalTriptoFirebase(context);
+          } else {
+            Navigator.pushReplacementNamed(context, homeScreenRoute);
+          }
+        });
+      } else {
+        await userRepository.update(storage.user!.userId, {
+          "cloudSubscription": true,
+          "skinColorSubscription": true,
+          "unlimitedTripSubscription": true,
+          "extraPhotoSubscription": true,
+          "unlockPassportSubscription": true,
+          "exportPdfSubscription": true,
+        }).then((value) async {
+          // ignore: use_build_context_synchronously
+          await context.read<UserProvider>().updateFirebaseUser();
+          EasyLoading.showSuccess("Subscription successfully buy");
           Navigator.pushReplacementNamed(context, homeScreenRoute);
-        }
-      });
+        });
+      }
+
       //}
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);

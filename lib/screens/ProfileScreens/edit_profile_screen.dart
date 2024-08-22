@@ -104,7 +104,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 image: NetworkImage(
                                   storage.user!.userImg,
                                 ),
-                                fit: BoxFit.cover,
                               ),
                             ),
                       child: Center(

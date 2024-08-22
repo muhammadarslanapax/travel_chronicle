@@ -270,7 +270,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   SubscriptionsRowWidget(
                     onTap: () {
                       Navigator.pushNamed(context, subscriptionDetailsScreenRoute, arguments: {
-                        "subscription": 6,
+                        "subscription": 7,
                         "heading": "All Inclusive Pack",
                         "details": "Buy All features on app\nCloud Storage is not included",
                         "price": '\$11.99',

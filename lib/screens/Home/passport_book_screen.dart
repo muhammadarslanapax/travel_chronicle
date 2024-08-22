@@ -187,6 +187,7 @@ class _PassportBookScreenState extends State<PassportBookScreen> {
     ByteData data = await rootBundle.load('assets/IMMIGRATION Travel Chronicle.png');
     Uint8List bytes = data.buffer.asUint8List();
     final watermarkedImg = await ImageWatermark.addTextWatermark(
+      
         dstX: 130, dstY: 200, imgBytes: bytes, watermarkText: '$country\n$date', color: brownColor);
     _image = watermarkedImg;
     setState(() {});

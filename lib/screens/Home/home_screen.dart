@@ -213,11 +213,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                                image: NetworkImage(
-                                  scale: 1,
-                                  provider.localUser!.userImg,
-                                ),
-                                fit: BoxFit.cover),
+                              image: NetworkImage(
+                                scale: 1,
+                                provider.localUser!.userImg,
+                              ),
+                            ),
                           ),
                         );
                       } else {

@@ -8,14 +8,12 @@ class UserModel {
   final bool accountStatus;
   final bool cloudSubscription;
   final bool extraPhotoSubscription;
-  final bool allSubscription;
   final bool exportPdfSubscription;
   final bool skinColorSubscription;
   final bool unlimitedTripSubscription;
   final bool unlockPassportSubscription;
 
   UserModel({
-    required this.allSubscription,
     required this.exportPdfSubscription,
     required this.skinColorSubscription,
     required this.unlimitedTripSubscription,
@@ -43,7 +41,6 @@ class UserModel {
       accountStatus: map['accountStatus'],
       cloudSubscription: map["cloudSubscription"],
       extraPhotoSubscription: map["extraPhotoSubscription"],
-      allSubscription: map["allSubscription"],
       exportPdfSubscription: map["exportPdfSubscription"],
       skinColorSubscription: map["skinColorSubscription"],
       unlimitedTripSubscription: map["unlimitedTripSubscription"],
@@ -63,7 +60,6 @@ class UserModel {
       'accountStatus': accountStatus,
       "cloudSubscription": cloudSubscription,
       "extraPhotoSubscription": extraPhotoSubscription,
-      "allSubscription": allSubscription,
       "exportPdfSubscription": exportPdfSubscription,
       "skinColorSubscription": skinColorSubscription,
       "unlimitedTripSubscription": unlimitedTripSubscription,
@@ -83,7 +79,6 @@ class UserModel {
         accountStatus: json['accountStatus'],
         cloudSubscription: json["cloudSubscription"],
         extraPhotoSubscription: json["extraPhotoSubscription"],
-        allSubscription: json["allSubscription"],
         exportPdfSubscription: json["exportPdfSubscription"],
         skinColorSubscription: json["skinColorSubscription"],
         unlimitedTripSubscription: json["unlimitedTripSubscription"],
@@ -102,7 +97,6 @@ class UserModel {
       'accountStatus': accountStatus,
       "cloudSubscription": cloudSubscription,
       "extraPhotoSubscription": extraPhotoSubscription,
-      "allSubscription": allSubscription,
       "exportPdfSubscription": exportPdfSubscription,
       "skinColorSubscription": skinColorSubscription,
       "unlimitedTripSubscription": unlimitedTripSubscription,

@@ -52,6 +52,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
       body: Form(
         key: formKey,
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             children: [
               const AppBarWidget(text: "Create New Trip"),
@@ -245,6 +246,26 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                             if (images.length > i) {
                                               images.removeAt(i);
                                               setState(() {});
+                                            } else {
+                                              if (provider.localUser != null) {
+                                                if (images.isNotEmpty) {
+                                                  if (provider.localUser!.extraPhotoSubscription == true) {
+                                                    pickImage();
+                                                  } else {
+                                                    EasyLoading.showInfo(
+                                                        "Please buy subscription for more then 1 image!");
+                                                  }
+                                                } else {
+                                                  pickImage();
+                                                }
+                                              } else {
+                                                if (images.isNotEmpty) {
+                                                  EasyLoading.showInfo(
+                                                      "Please buy subscription for more then 1 image!");
+                                                } else {
+                                                  pickImage();
+                                                }
+                                              }
                                             }
                                           },
                                           child: Center(
@@ -616,17 +637,14 @@ class _AddTripScreenState extends State<AddTripScreen> {
 
     try {
       int date2020 = DateTime(2020, 1, 1).millisecondsSinceEpoch;
-      if (
-          dateStart < date2020 &&
-              context.read<UserProvider>().localUser != null &&
-              context.read<UserProvider>().localUser!.cloudSubscription &&
-              context.read<UserProvider>().localUser!.unlimitedTripSubscription == false) {
-
-              
-                print(dateStart < date2020 );
-                print(context.read<UserProvider>().localUser != null );
-                print(context.read<UserProvider>().localUser!.cloudSubscription );
-                print(context.read<UserProvider>().localUser!.unlimitedTripSubscription == false );
+      if (dateStart < date2020 &&
+          context.read<UserProvider>().localUser != null &&
+          context.read<UserProvider>().localUser!.cloudSubscription &&
+          context.read<UserProvider>().localUser!.unlimitedTripSubscription == false) {
+        print(dateStart < date2020);
+        print(context.read<UserProvider>().localUser != null);
+        print(context.read<UserProvider>().localUser!.cloudSubscription);
+        print(context.read<UserProvider>().localUser!.unlimitedTripSubscription == false);
         EasyLoading.showInfo("please buy subscription for uploading before 2020 evetns! ");
       } else {
         await eventRepository.saveEvent(newEvent, timestamp.toString());
@@ -638,9 +656,6 @@ class _AddTripScreenState extends State<AddTripScreen> {
       log(e.toString());
     }
   }
-
-
-
 
   uploadEventLocal() async {
     try {
