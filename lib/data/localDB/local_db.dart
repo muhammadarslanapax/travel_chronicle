@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:travel_chronicle/data/localDB/event/event_model.dart';
 
@@ -14,13 +15,26 @@ class HiveService {
     return box.values.toList();
   }
 
-  static Future<void> updateEvent(int index, EventLocalDBModel event) async {
+  static Future<void> updateEvent(int timestamp, EventLocalDBModel event) async {
     var box = await Hive.openBox<EventLocalDBModel>(boxName);
-    await box.putAt(index, event);
+
+    var index = box.values.toList().indexWhere((event) => event.timestamp == timestamp);
+
+    if (index != -1) {
+      await box.putAt(index, event);
+    } else {
+      if (kDebugMode) {
+        print("Event not found!");
+      }
+    }
   }
 
   static Future<void> deleteEvent(int index) async {
     var box = await Hive.openBox<EventLocalDBModel>(boxName);
     await box.deleteAt(index);
+  }
+  static Future<void> deleteAllEvents() async {
+    var box = await Hive.openBox<EventLocalDBModel>(boxName);
+    await box.clear();
   }
 }

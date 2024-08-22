@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_chronicle/provider/edit_provider.dart';
+import 'package:travel_chronicle/provider/user_provider.dart';
 import 'package:travel_chronicle/utilities/date_formeter.dart';
 
 import '../../global_widgets/trip_details_row_widget.dart';
@@ -117,7 +119,13 @@ class _PrintTripScreenState extends State<PrintTripScreen> {
                   const Spacer(),
                   InkWell(
                     onTap: () {
-                      _generateAndSavePDF(context);
+                      if (context.read<UserProvider>().localUser != null &&
+                          context.read<UserProvider>().localUser!.cloudSubscription &&
+                          context.read<UserProvider>().localUser!.exportPdfSubscription) {
+                        _generateAndSavePDF(context);
+                      } else {
+                        EasyLoading.showInfo("please buy Export to Pdf Subscription first!");
+                      }
                     },
                     child: Align(
                       alignment: Alignment.centerRight,

@@ -19,11 +19,8 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  List<Package> packages = [];
-
   @override
   void initState() {
-    fetchOfferings();
     super.initState();
   }
 
@@ -51,7 +48,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   SubscriptionsRowWidget(
                     onTap: () {
-                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute);
+                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute, arguments: {
+                        "subscription": 1,
+                        "heading": "Cloud Storage",
+                        "details": "Back up progress for all devices\nEffective for 1 year\nNo-auto renewal",
+                        "price": '\$3.99',
+                      });
                     },
                     heading: "Cloud Storage",
                     details: "Back up progress for all devices\nEffective for 1 year\nNo-auto renewal",
@@ -203,7 +205,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   SubscriptionsRowWidget(
                     onTap: () {
-                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute);
+                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute, arguments: {
+                        "subscription": 3,
+                        "heading": "Unlimited Trip Entries",
+                        "details": "Activate trip entry for 2020 and prior",
+                        "price": '\$3.99',
+                      });
                     },
                     heading: "Unlimited Trip Entries",
                     details: "Activate trip entry for 2020 and prior",
@@ -214,7 +221,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   SubscriptionsRowWidget(
                     onTap: () {
-                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute);
+                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute, arguments: {
+                        "subscription": 4,
+                        "heading": "Extra Photos Upload",
+                        "details": "Upload additional images to trips\nID registration is required",
+                        "price": '\$3.99',
+                      });
                     },
                     heading: "Extra Photos Upload",
                     details: "Upload additional images to trips\nID registration is required",
@@ -225,7 +237,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   SubscriptionsRowWidget(
                     onTap: () {
-                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute);
+                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute, arguments: {
+                        "subscription": 5,
+                        "heading": "Unlock Passport Book",
+                        "details": "Access passport book for stamp collection",
+                        "price": '\$2.99',
+                      });
                     },
                     heading: "Unlock Passport Book",
                     details: "Access passport book for stamp collection",
@@ -236,7 +253,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   SubscriptionsRowWidget(
                     onTap: () {
-                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute);
+                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute, arguments: {
+                        "subscription": 6,
+                        "heading": "Export to PDF",
+                        "details": "Export journal for printing",
+                        "price": '\$2.99',
+                      });
                     },
                     heading: "Export to PDF",
                     details: "Export journal for printing",
@@ -247,9 +269,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   SubscriptionsRowWidget(
                     onTap: () {
-                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute);
-
-                      _showUpgradeNowBottomSheetDialog();
+                      Navigator.pushNamed(context, subscriptionDetailsScreenRoute, arguments: {
+                        "subscription": 6,
+                        "heading": "All Inclusive Pack",
+                        "details": "Buy All features on app\nCloud Storage is not included",
+                        "price": '\$11.99',
+                      });
                     },
                     heading: "All Inclusive Pack",
                     details: "Buy All features on app\nCloud Storage is not included",
@@ -263,218 +288,5 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         ),
       ),
     );
-  }
-
-  _showUpgradeNowBottomSheetDialog() {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-        ),
-        builder: (builder) {
-          return SingleChildScrollView(
-            child: Container(
-              color: Colors.transparent,
-              child: Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Center(
-                        child: Container(
-                          width: 100,
-                          height: 2,
-                          color: const Color(0xFF9B3DF3),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: const Text(
-                          "Upgrade Now",
-                          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: const Text(
-                          "You can remove advertising and improve your images by using our premium plan.",
-                          style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w300),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  ClipRRect(
-                                      borderRadius: const BorderRadius.all(Radius.circular(6.0)),
-                                      child: Image.asset(
-                                        "assets/images/low_quality.png",
-                                        height: 200,
-                                        width: MediaQuery.of(context).size.width,
-                                        fit: BoxFit.cover,
-                                      )),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  const Text(
-                                    "Free Plan",
-                                    style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.all(Radius.circular(6.0)),
-                                    child: Image.asset(
-                                      "assets/images/high_quality.png",
-                                      height: 200,
-                                      width: MediaQuery.of(context).size.width,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  const Text(
-                                    "Premium Plan",
-                                    style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Text(
-                          "*The price for 50 tokens is .",
-                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: const Text(
-                          "Use our premium service by using tokens (1 token = 1 high quality image without advertising). Updating your plan you buy 50 tokens.",
-                          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Text(
-                          "The price for 50 tokens is ",
-                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: const Text(
-                          "You have to use your tokens in 3 months, after this expiration period your tokens will be lost without money refund.",
-                          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          if (packages.isNotEmpty) {
-                            Navigator.of(context).pop();
-                            _purchasePlan(packages[0]);
-                          }
-                        },
-                        child: Container(
-                          height: 50,
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Stack(
-                            children: [
-                              Image.asset(
-                                "assets/icons/pngs/bg_gradient_btn.png",
-                                width: MediaQuery.of(context).size.width,
-                              ),
-                              const Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Update Plan",
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                    ],
-                  )),
-            ),
-          );
-        });
-  }
-
-  _purchasePlan(Package package) async {
-    try {
-      CustomerInfo purchaserInfo = await Purchases.purchasePackage(package);
-      var isPro = purchaserInfo.entitlements.all["premium_travel_app_images_upload"]?.isActive;
-      if (isPro ?? false) {}
-    } on PlatformException catch (e) {
-      var errorCode = PurchasesErrorHelper.getErrorCode(e);
-      if (errorCode != PurchasesErrorCode.purchaseCancelledError) {}
-    }
-  }
-
-  Future fetchOfferings() async {
-    final offerings = await PurchaseApi.fetchOffers();
-    log("offer ${offerings}");
-    if (offerings.isNotEmpty) {
-      final offer = offerings.first;
-      packages = offerings.map((e) => e.availablePackages).expand((element) => element).toList();
-      if (mounted) {
-        setState(() {});
-      }
-    }
   }
 }

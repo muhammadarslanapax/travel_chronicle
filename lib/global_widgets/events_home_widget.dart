@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/provider/home_provider.dart';
+import 'package:travel_chronicle/provider/user_provider.dart';
 import 'package:travel_chronicle/utilities/app_colors.dart';
 import 'package:travel_chronicle/utilities/app_routes.dart';
 import 'package:travel_chronicle/utilities/app_text_styles.dart';
@@ -106,65 +107,105 @@ class _EventTileState extends State<EventTile> {
     final widht = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    return GestureDetector(
-      onTap: () {
-        context.read<HomeProvider>().setEventModel(widget.event);
+    return GestureDetector(onTap: () {
+      context.read<HomeProvider>().setEventModel(widget.event);
 
-        Navigator.pushNamed(context, tripDetailsScreenRoute);
-      },
-      child: Container(
-        width: widht * 0.22,
-        height: widht * 0.22,
-        decoration: isCloundSubscription != null
-            ? BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                image: DecorationImage(
-                  image: NetworkImage(widget.event.images.first),
-                  fit: BoxFit.cover,
-                ),
-              )
-            : BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                image: DecorationImage(
-                  image: FileImage(File(widget.event.images.first)),
-                  fit: BoxFit.cover,
-                ),
-              ),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            height: height * 0.04,
-            width: 80,
+      Navigator.pushNamed(context, tripDetailsScreenRoute);
+    }, child: Consumer<UserProvider>(
+      builder: (context, provider, child) {
+        if (provider.localUser != null && provider.localUser!.cloudSubscription == true) {
+          return Container(
+            width: widht * 0.22,
+            height: widht * 0.22,
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(8.0),
-                bottomRight: Radius.circular(8.0),
+              borderRadius: BorderRadius.circular(8.0),
+              image: DecorationImage(
+                image: NetworkImage(widget.event.images.first),
+                fit: BoxFit.cover,
               ),
-              color: Colors.red.withOpacity(0.5),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.event.name,
-                  style: eight700TextStyle(
-                    color: Colors.white,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: height * 0.04,
+                width: 80,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  color: Colors.red.withOpacity(0.5),
                 ),
-                Text(
-                  date,
-                  style: eight400TextStyle(
-                    color: Colors.white,
-                  ),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.event.name,
+                      style: eight700TextStyle(
+                        color: Colors.white,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      date,
+                      style: eight400TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        } else {
+          return Container(
+            width: widht * 0.22,
+            height: widht * 0.22,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              image: DecorationImage(
+                image: FileImage(File(widget.event.images.first)),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: height * 0.04,
+                width: 80,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
+                  ),
+                  color: Colors.red.withOpacity(0.5),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.event.name,
+                      style: eight700TextStyle(
+                        color: Colors.white,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      date,
+                      style: eight400TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      },
+    ));
   }
 
   Future<void> getCloundSubscription() async {

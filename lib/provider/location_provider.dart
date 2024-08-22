@@ -37,10 +37,14 @@ class LocationProvider extends ChangeNotifier {
   }
 
   Future<AddressModel> _getAddress(LocationModel location) async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(location.latitude, location.longitude);
-    Placemark place = placemarks[0];
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(location.latitude, location.longitude);
+      Placemark place = placemarks[0];
 
-    return AddressModel(city: place.locality ?? "", country: place.country ?? "");
+      return AddressModel(city: place.locality ?? "", country: place.country ?? "");
+    } catch (e) {
+      return AddressModel(city: "", country: "");
+    }
   }
 }
 

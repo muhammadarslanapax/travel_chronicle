@@ -1,13 +1,18 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path/path.dart';
 import 'package:travel_chronicle/data/localDB/event/event_model.dart';
 import 'package:travel_chronicle/data/localDB/local_db.dart';
 import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/models/event_model.dart';
 import 'package:travel_chronicle/utilities/app_consts.dart';
+import 'package:travel_chronicle/utilities/app_routes.dart';
 
 class HomeProvider extends ChangeNotifier {
   List<EventModel> _events = [];
@@ -21,13 +26,11 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> fetchEvents() async {
-    final cloudSub = await storage.isCloundSubscription();
-
-    // cloudSub != null ?
-    
-     await fetchEventsfromApi() ;
-    
-    //  await fetchEventsfromLocal();
+    if (storage.user != null && storage.user!.cloudSubscription == true) {
+      await fetchEventsfromApi();
+    } else {
+      await fetchEventsfromLocal();
+    }
   }
 
   Future<void> fetchEventsfromApi() async {
@@ -81,7 +84,6 @@ class HomeProvider extends ChangeNotifier {
 
   int maxFailedLoadAttempts = 3;
 
-  BannerAd? bannerAd;
 
   InterstitialAd? interstitialAd;
 
@@ -93,30 +95,6 @@ class HomeProvider extends ChangeNotifier {
 
   int _numInterstitialLoadAttempts = 0;
 
-  void loadAd() async {
-    BannerAd(
-      adUnitId: AppConsts.bannderAdUnitId,
-      request: const AdRequest(),
-      size: AdSize.banner,
-      listener: BannerAdListener(
-        // Called when an ad is successfully received.
-        onAdLoaded: (ad) {
-          bannerAd = ad as BannerAd;
-          notifyListeners();
-        },
-        // Called when an ad request failed.
-        onAdFailedToLoad: (ad, err) {
-          ad.dispose();
-        },
-        // Called when an ad opens an overlay that covers the screen.
-        onAdOpened: (Ad ad) {},
-        // Called when an ad removes an overlay that covers the screen.
-        onAdClosed: (Ad ad) {},
-        // Called when an impression occurs on the ad.
-        onAdImpression: (Ad ad) {},
-      ),
-    ).load();
-  }
 
   void createInterstitialAd() {
     InterstitialAd.load(
@@ -139,4 +117,22 @@ class HomeProvider extends ChangeNotifier {
           },
         ));
   }
+
+  addLocalTriptoFirebase(BuildContext context) async {
+    if (_events.isNotEmpty) {
+      EasyLoading.show(status: "Loading..");
+      try {
+        await eventRepository.saveAllEvents(_events);
+
+        EasyLoading.showSuccess("All trips uploaded on cloud successfully!");
+        HiveService.deleteAllEvents();
+        Navigator.pushReplacementNamed(context, homeScreenRoute);
+      } catch (e) {
+        EasyLoading.showError('Failed to create trip: $e');
+        log(e.toString());
+      }
+    }
+  }
+
+
 }

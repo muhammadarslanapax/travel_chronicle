@@ -5,10 +5,14 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:travel_chronicle/data/localDB/event/event_model.dart';
+import 'package:travel_chronicle/data/localDB/local_db.dart';
 import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/models/event_model.dart';
 import 'package:travel_chronicle/provider/edit_provider.dart';
+import 'package:travel_chronicle/provider/passport_provider.dart';
 import 'package:travel_chronicle/provider/stapm_provider.dart';
+import 'package:travel_chronicle/provider/user_provider.dart';
 import 'package:travel_chronicle/utilities/date_formeter.dart';
 import 'package:travel_chronicle/utilities/validator.dart';
 
@@ -223,39 +227,76 @@ class _EditTripScreenState extends State<EditTripScreen> {
                                   },
                                   child: Consumer<EditProvider>(
                                     builder: (BuildContext context, provider, Widget? child) {
-                                      return Container(
-                                        width: i == 0 ? 85 : 65,
-                                        height: i == 0 ? 85 : 65,
-                                        margin: const EdgeInsets.only(right: 15),
-                                        decoration: provider.imagesUrl.length < i + 1
-                                            ? BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                color: Colors.grey[600],
-                                              )
-                                            : BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.0),
-                                                image: DecorationImage(
-                                                  image: NetworkImage(provider.imagesUrl[i]),
-                                                  fit: BoxFit.cover,
+                                      if (context.read<UserProvider>().localUser != null &&
+                                          context.read<UserProvider>().localUser!.cloudSubscription == true) {
+                                        return Container(
+                                          width: i == 0 ? 85 : 65,
+                                          height: i == 0 ? 85 : 65,
+                                          margin: const EdgeInsets.only(right: 15),
+                                          decoration: provider.imagesUrl.length < i + 1
+                                              ? BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                  color: Colors.grey[600],
+                                                )
+                                              : BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(provider.imagesUrl[i]),
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 ),
-                                              ),
-                                        // child: GestureDetector(
-                                        //   onTap: () {
-                                        //     context.read<EditProvider>().removeImageUrl(i);
+                                          // child: GestureDetector(
+                                          //   onTap: () {
+                                          //     context.read<EditProvider>().removeImageUrl(i);
 
-                                        //     // if (provider.images.length > i) {
-                                        //     //   provider.removeImages(i);
-                                        //     // }
-                                        //   },
-                                        //   child: Center(
-                                        //     child: Icon(
-                                        //       provider.imagesUrl.length < i + 1 ? Icons.add : Icons.delete_forever,
-                                        //       color: provider.imagesUrl.length < i + 1 ? Colors.white : Colors.red,
-                                        //     ),
-                                        //   ),
+                                          //     // if (provider.images.length > i) {
+                                          //     //   provider.removeImages(i);
+                                          //     // }
+                                          //   },
+                                          //   child: Center(
+                                          //     child: Icon(
+                                          //       provider.imagesUrl.length < i + 1 ? Icons.add : Icons.delete_forever,
+                                          //       color: provider.imagesUrl.length < i + 1 ? Colors.white : Colors.red,
+                                          //     ),
+                                          //   ),
 
-                                        // ),
-                                      );
+                                          // ),
+                                        );
+                                      } else {
+                                        return Container(
+                                          width: i == 0 ? 85 : 65,
+                                          height: i == 0 ? 85 : 65,
+                                          margin: const EdgeInsets.only(right: 15),
+                                          decoration: provider.imagesUrl.length < i + 1
+                                              ? BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                  color: Colors.grey[600],
+                                                )
+                                              : BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                  image: DecorationImage(
+                                                    image: FileImage(File(provider.imagesUrl[i])),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                          // child: GestureDetector(
+                                          //   onTap: () {
+                                          //     context.read<EditProvider>().removeImageUrl(i);
+
+                                          //     // if (provider.images.length > i) {
+                                          //     //   provider.removeImages(i);
+                                          //     // }
+                                          //   },
+                                          //   child: Center(
+                                          //     child: Icon(
+                                          //       provider.imagesUrl.length < i + 1 ? Icons.add : Icons.delete_forever,
+                                          //       color: provider.imagesUrl.length < i + 1 ? Colors.white : Colors.red,
+                                          //     ),
+                                          //   ),
+
+                                          // ),
+                                        );
+                                      }
                                     },
                                   ),
                                 ),
@@ -625,41 +666,88 @@ class _EditTripScreenState extends State<EditTripScreen> {
 
   Future<void> _updateTripRequest(BuildContext context, String evenId) async {
     if (formKey.currentState!.validate()) {
-      EasyLoading.show(status: "Loading..");
-      int timestamp = DateTime.now().millisecondsSinceEpoch;
-      String name = titleController.text;
-      String placeName = cityController.text;
-      String title = imageTitleController.text;
-      String tripName = titleController.text;
-      String location = '${cityController.text}, ${countryController.text}';
-      int dateStart = selectedStartDate ?? _eventModel!.dateStart;
-      int dateEnd = selectedEndDate ?? _eventModel!.dateEnd!;
-      String hotelName = hotelController.text;
-      List<String> companionsNames = companionsController.text.split(',');
-      String aboutTrip = descriptionsController.text;
-      String stamp = context.read<StampProvider>().stemp ?? '';
-
-      List<String> imagesUploaded = context.read<EditProvider>().imagesUrl;
-      EventModel updatedEvent = EventModel(
-          timestamp: _eventModel!.timestamp,
-          name: name,
-          images: imagesUploaded,
-          placeName: placeName,
-          userName: storage.user!.userName,
-          userId: storage.user!.userId,
-          userImage: storage.user!.userImg,
-          userLocation: storage.user!.city.toString() + storage.user!.country.toString(),
-          tripName: tripName,
-          location: location,
-          dateStart: dateStart,
-          dateEnd: dateEnd,
-          hotelName: hotelName,
-          companionsNames: companionsNames,
-          aboutTrip: aboutTrip,
-          stamp: stamp,
-          imageTitle: title);
-
-      context.read<EditProvider>().updateEvent(context, updatedEvent, _eventModel!.timestamp.toString());
+      if (context.read<UserProvider>().localUser != null &&
+          context.read<UserProvider>().localUser!.cloudSubscription == true) {
+        editEventAPi(context, evenId);
+      } else {
+        editEventLocal(context, evenId);
+      }
     }
+  }
+
+  editEventAPi(BuildContext context, String evenId) async {
+    EasyLoading.show(status: "Loading..");
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    String name = titleController.text;
+    String placeName = cityController.text;
+    String title = imageTitleController.text;
+    String tripName = titleController.text;
+    String location = '${cityController.text}, ${countryController.text}';
+    int dateStart = selectedStartDate ?? _eventModel!.dateStart;
+    int dateEnd = selectedEndDate ?? _eventModel!.dateEnd!;
+    String hotelName = hotelController.text;
+    List<String> companionsNames = companionsController.text.split(',');
+    String aboutTrip = descriptionsController.text;
+    String stamp = context.read<StampProvider>().stemp ?? context.read<PassportProvider>().stemp ?? '';
+
+    List<String> imagesUploaded = context.read<EditProvider>().imagesUrl;
+    EventModel updatedEvent = EventModel(
+        timestamp: _eventModel!.timestamp,
+        name: name,
+        images: imagesUploaded,
+        placeName: placeName,
+        userName: storage.user!.userName,
+        userId: storage.user!.userId,
+        userImage: storage.user!.userImg,
+        userLocation: storage.user!.city.toString() + storage.user!.country.toString(),
+        tripName: tripName,
+        location: location,
+        dateStart: dateStart,
+        dateEnd: dateEnd,
+        hotelName: hotelName,
+        companionsNames: companionsNames,
+        aboutTrip: aboutTrip,
+        stamp: stamp,
+        imageTitle: title);
+
+    context.read<EditProvider>().updateEvent(context, updatedEvent, _eventModel!.timestamp.toString());
+  }
+
+  editEventLocal(BuildContext context, String evenId) {
+    EasyLoading.show(status: "Loading..");
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    String name = titleController.text;
+    String placeName = cityController.text;
+    String title = imageTitleController.text;
+    String tripName = titleController.text;
+    String location = '${cityController.text}, ${countryController.text}';
+    int dateStart = selectedStartDate ?? _eventModel!.dateStart;
+    int dateEnd = selectedEndDate ?? _eventModel!.dateEnd!;
+    String hotelName = hotelController.text;
+    List<String> companionsNames = companionsController.text.split(',');
+    String aboutTrip = descriptionsController.text;
+    String stamp = context.read<StampProvider>().stemp ?? context.read<PassportProvider>().stemp ?? '';
+
+    List<String> imagesUploaded = context.read<EditProvider>().imagesUrl;
+    EventLocalDBModel updatedEvent = EventLocalDBModel(
+        timestamp: _eventModel!.timestamp,
+        name: name,
+        images: imagesUploaded,
+        placeName: placeName,
+        userName: storage.user!.userName,
+        userId: storage.user!.userId,
+        userImage: storage.user!.userImg,
+        userLocation: storage.user!.city.toString() + storage.user!.country.toString(),
+        tripName: tripName,
+        location: location,
+        dateStart: dateStart,
+        dateEnd: dateEnd,
+        hotelName: hotelName,
+        companionsNames: companionsNames,
+        aboutTrip: aboutTrip,
+        stamp: stamp,
+        imageTitle: title);
+
+    context.read<EditProvider>().editEventLocal(context, updatedEvent, timestamp);
   }
 }

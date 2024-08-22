@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Navigator.pushNamedAndRemoveUntil(context, homeScreenRoute, (route) => false);
           context.read<UserProvider>().updateUser(storage.user!);
         } else {
-          Navigator.pushNamedAndRemoveUntil(context, loginScreenRoute, (route) => false);
+          Navigator.pushNamedAndRemoveUntil(context, homeScreenRoute, (route) => false);
         }
       },
     );

@@ -4,11 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_chronicle/data/localDB/event/event_model.dart';
-import 'package:travel_chronicle/data/localDB/local_db.dart';
 import 'package:travel_chronicle/data/purchase_api.dart';
 import 'package:travel_chronicle/provider/change_password_provider.dart';
 import 'package:travel_chronicle/provider/delete_provider.dart';
@@ -22,6 +22,7 @@ import 'package:travel_chronicle/screens/Authentication/forgot_password_screen.d
 import 'package:travel_chronicle/screens/Authentication/login_screen.dart';
 import 'package:travel_chronicle/screens/Authentication/signup_screen.dart';
 import 'package:travel_chronicle/screens/Authentication/splash_screen.dart';
+import 'package:travel_chronicle/screens/Home/ad/ad_state.dart';
 import 'package:travel_chronicle/screens/Home/add_trip_screen.dart';
 
 import 'package:travel_chronicle/screens/Home/edit_trip_screen.dart';
@@ -43,7 +44,8 @@ import 'data/locator.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  WidgetsFlutterBinding.ensureInitialized();
+  final initFuture = MobileAds.instance.initialize();
+  final adState = AdState(initFuture);
   Directory directory = await getApplicationDocumentsDirectory();
   Hive.init(directory.path);
   Hive.registerAdapter(EventLocalDBModelAdapter());
@@ -61,7 +63,10 @@ Future main() async {
   await storage.init();
   await PurchaseApi.initPlatformState();
 
-  runApp(const MyApp());
+  runApp( Provider.value(
+    value: adState,
+    builder: (context, child) => const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -84,6 +89,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),

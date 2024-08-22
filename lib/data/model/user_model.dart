@@ -1,4 +1,3 @@
-
 class UserModel {
   final String userId;
   final String userEmail;
@@ -7,9 +6,20 @@ class UserModel {
   final String? city;
   final String? country;
   final bool accountStatus;
-  final bool premium;
+  final bool cloudSubscription;
+  final bool extraPhotoSubscription;
+  final bool allSubscription;
+  final bool exportPdfSubscription;
+  final bool skinColorSubscription;
+  final bool unlimitedTripSubscription;
+  final bool unlockPassportSubscription;
 
   UserModel({
+    required this.allSubscription,
+    required this.exportPdfSubscription,
+    required this.skinColorSubscription,
+    required this.unlimitedTripSubscription,
+    required this.unlockPassportSubscription,
     required this.userId,
     required this.userEmail,
     required this.userName,
@@ -17,7 +27,8 @@ class UserModel {
     required this.accountStatus,
     this.country,
     this.city,
-    required this.premium,
+    required this.cloudSubscription,
+    required this.extraPhotoSubscription,
   });
 
   // Factory constructor for creating a new UserModel instance from a map
@@ -30,7 +41,13 @@ class UserModel {
       country: map['country'],
       city: map['city'],
       accountStatus: map['accountStatus'],
-      premium : map["premium"]
+      cloudSubscription: map["cloudSubscription"],
+      extraPhotoSubscription: map["extraPhotoSubscription"],
+      allSubscription: map["allSubscription"],
+      exportPdfSubscription: map["exportPdfSubscription"],
+      skinColorSubscription: map["skinColorSubscription"],
+      unlimitedTripSubscription: map["unlimitedTripSubscription"],
+      unlockPassportSubscription: map["unlockPassportSubscription"],
     );
   }
 
@@ -44,22 +61,33 @@ class UserModel {
       'city': city,
       'userImg': userImg,
       'accountStatus': accountStatus,
-      "premium":premium
+      "cloudSubscription": cloudSubscription,
+      "extraPhotoSubscription": extraPhotoSubscription,
+      "allSubscription": allSubscription,
+      "exportPdfSubscription": exportPdfSubscription,
+      "skinColorSubscription": skinColorSubscription,
+      "unlimitedTripSubscription": unlimitedTripSubscription,
+      "unlockPassportSubscription": unlockPassportSubscription,
     };
   }
 
   // Factory constructor for creating a new UserModel instance from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      userId: json['userId'],
-      userEmail: json['userEmail'],
-      userName: json['userName'],
-      city: json['city'],
-      country: json['country'],
-      userImg: json['userImg'],
-      accountStatus: json['accountStatus'],
-      premium:json["premium"]
-    );
+        userId: json['userId'],
+        userEmail: json['userEmail'],
+        userName: json['userName'],
+        city: json['city'],
+        country: json['country'],
+        userImg: json['userImg'],
+        accountStatus: json['accountStatus'],
+        cloudSubscription: json["cloudSubscription"],
+        extraPhotoSubscription: json["extraPhotoSubscription"],
+        allSubscription: json["allSubscription"],
+        exportPdfSubscription: json["exportPdfSubscription"],
+        skinColorSubscription: json["skinColorSubscription"],
+        unlimitedTripSubscription: json["unlimitedTripSubscription"],
+        unlockPassportSubscription: json["unlockPassportSubscription"]);
   }
 
   // Method for converting a UserModel instance to JSON
@@ -72,7 +100,13 @@ class UserModel {
       'country': country,
       'city': city,
       'accountStatus': accountStatus,
-      "premium":premium
+      "cloudSubscription": cloudSubscription,
+      "extraPhotoSubscription": extraPhotoSubscription,
+      "allSubscription": allSubscription,
+      "exportPdfSubscription": exportPdfSubscription,
+      "skinColorSubscription": skinColorSubscription,
+      "unlimitedTripSubscription": unlimitedTripSubscription,
+      "unlockPassportSubscription": unlockPassportSubscription,
     };
   }
 }

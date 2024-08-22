@@ -96,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 30,
                         ),
                         TextFieldWidget(
+                          textInputAction: TextInputAction.next,
                           hintText: "Enter Your Email",
                           textFieldController: emailController,
                           validator: Validator.emailValidator,

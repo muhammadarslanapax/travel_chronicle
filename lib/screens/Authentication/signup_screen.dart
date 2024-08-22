@@ -106,6 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           height: 30,
                         ),
                         TextFieldWidget(
+                          textInputAction: TextInputAction.next,
                           hintText: "Enter Your Name",
                           textFieldController: nameController,
                           obscureText: false,
@@ -114,6 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           height: 10,
                         ),
                         TextFieldWidget(
+                          textInputAction: TextInputAction.next,
                           hintText: "Enter Your Email",
                           textFieldController: emailController,
                           obscureText: false,
@@ -122,6 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           height: 10,
                         ),
                         TextFieldWidget(
+                          textInputAction: TextInputAction.next,
                           hintText: "Password",
                           textFieldController: passwordController,
                           obscureText: obscureText,
@@ -216,7 +219,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               userImg: '',
               country: country,
               city: city,
-              premium: false,
+              cloudSubscription: false,
+              extraPhotoSubscription: false,
+              allSubscription: false,
+              exportPdfSubscription: false,
+              skinColorSubscription: false,
+              unlimitedTripSubscription: false,
+              unlockPassportSubscription: false,
             );
             await userRepository.add(localUser).then((value) async {
               await context.read<UserProvider>().updateFirebaseUser();

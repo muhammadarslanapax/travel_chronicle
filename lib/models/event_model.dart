@@ -22,7 +22,7 @@ class EventModel {
   EventModel({
     required this.timestamp,
     required this.name,
-    required this.images,
+     required this.images,
     this.placeName,
     this.userId,
     this.userName,

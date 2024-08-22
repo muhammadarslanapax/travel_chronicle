@@ -12,6 +12,7 @@ class TextFieldWidget extends StatefulWidget {
   final int maxLines;
   final int? maxCharacters;
   final bool readOnly;
+  final TextInputAction? textInputAction;
   final VoidCallback? onTap;
 
   const TextFieldWidget(
@@ -25,6 +26,7 @@ class TextFieldWidget extends StatefulWidget {
       required this.obscureText,
       this.suffixIcon,
       this.prefixIcon,
+      this.textInputAction,
       this.onTap});
 
   @override
@@ -35,6 +37,8 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      textInputAction: widget.textInputAction, // Moves focus to next.
+
       maxLines: widget.maxLines,
       maxLength: widget.maxCharacters,
       controller: widget.textFieldController,
@@ -42,6 +46,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       obscureText: widget.obscureText,
       readOnly: widget.readOnly,
       onTap: widget.onTap,
+
       style: const TextStyle(
         color: textBrownColor,
       ),

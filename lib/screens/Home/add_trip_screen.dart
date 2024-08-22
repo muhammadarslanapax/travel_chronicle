@@ -10,6 +10,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:travel_chronicle/data/localDB/event/event_model.dart';
 import 'package:travel_chronicle/data/localDB/local_db.dart';
 import 'package:travel_chronicle/data/locator.dart';
+import 'package:travel_chronicle/provider/passport_provider.dart';
 import 'package:travel_chronicle/provider/stapm_provider.dart';
 import 'package:travel_chronicle/provider/user_provider.dart';
 import 'package:travel_chronicle/utilities/app_colors.dart';
@@ -41,6 +42,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
   var companionsController = TextEditingController();
   var descriptionsController = TextEditingController();
   var imageTitleController = TextEditingController();
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   List<File> images = [];
   @override
@@ -59,6 +61,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFieldWidget(
+                      textInputAction: TextInputAction.next,
                       hintText: "Trip Title (Optional)",
                       textFieldController: titleController,
                       obscureText: false,
@@ -72,6 +75,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                         Expanded(
                           child: TextFieldWidget(
                             hintText: "City",
+                            textInputAction: TextInputAction.next,
                             textFieldController: cityController,
                             validator: Validator.validateTextField,
                             obscureText: false,
@@ -89,6 +93,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                         Expanded(
                           child: TextFieldWidget(
                             hintText: "Country",
+                            textInputAction: TextInputAction.next,
                             textFieldController: countryController,
                             validator: Validator.validateTextField,
                             obscureText: false,
@@ -110,6 +115,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                         Expanded(
                           child: TextFieldWidget(
                             hintText: "Start Date",
+                            textInputAction: TextInputAction.next,
                             textFieldController: startDateController,
                             validator: Validator.validateTextField,
                             obscureText: false,
@@ -130,6 +136,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                         Expanded(
                           child: TextFieldWidget(
                             hintText: "End Date",
+                            textInputAction: TextInputAction.next,
                             textFieldController: endDateController,
                             validator: Validator.validateTextField,
                             obscureText: false,
@@ -152,6 +159,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     TextFieldWidget(
                       hintText: "Hotel (Optional)",
                       textFieldController: hotelController,
+                      textInputAction: TextInputAction.next,
                       obscureText: false,
                       prefixIcon: Image.asset(
                         "assets/hotelIcon.png",
@@ -166,6 +174,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     TextFieldWidget(
                       hintText: "Companions (Optional)",
                       textFieldController: companionsController,
+                      textInputAction: TextInputAction.next,
                       obscureText: false,
                       prefixIcon: Image.asset(
                         "assets/peopleIcon.png",
@@ -197,15 +206,22 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        pickImage();
-                                        if (provider.localUser!.premium == false) {
-                                          if (images.length != 1) {
-                                            pickImage();
+                                        if (provider.localUser != null) {
+                                          if (images.isNotEmpty) {
+                                            if (provider.localUser!.extraPhotoSubscription == true) {
+                                              pickImage();
+                                            } else {
+                                              EasyLoading.showInfo("Please buy subscription for more then 1 image!");
+                                            }
                                           } else {
-                                            EasyLoading.showInfo("Please buy subscription for more then 1 image!");
+                                            pickImage();
                                           }
                                         } else {
-                                          pickImage();
+                                          if (images.isNotEmpty) {
+                                            EasyLoading.showInfo("Please buy subscription for more then 1 image!");
+                                          } else {
+                                            pickImage();
+                                          }
                                         }
                                       },
                                       child: Container(
@@ -337,34 +353,17 @@ class _AddTripScreenState extends State<AddTripScreen> {
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              //  Navigator.pushNamed(context, stampSelectionScreenRoute);
+                              Navigator.pushNamed(context, passportBookScreenRoute);
                             },
                             child: Container(
                               color: Colors.transparent,
-                              child: Consumer<StampProvider>(
+                              child: Consumer<PassportProvider>(
                                 builder: (BuildContext context, provider, Widget? child) {
                                   if (provider.stemp != null) {
-                                    // return Image.network(
-                                    //   provider.stemp!,
-                                    //   width: 100,
-                                    //   height: 100,
-                                    // );
-                                    return Column(
-                                      children: [
-                                        Image.asset(
-                                          "assets/travelStamp.png",
-                                          width: 30,
-                                          height: 30,
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Text(
-                                          "Add a travel stamp",
-                                          style: fourteen500TextStyle(color: textBrownColor),
-                                          textAlign: TextAlign.center,
-                                        )
-                                      ],
+                                    return Image.network(
+                                      provider.stemp!,
+                                      width: 100,
+                                      height: 100,
                                     );
                                   } else {
                                     return Column(
@@ -567,15 +566,20 @@ class _AddTripScreenState extends State<AddTripScreen> {
 
   createTripRequest() async {
     if (formKey.currentState!.validate()) {
-      EasyLoading.show(status: "Loading..");
-
-      final cloudSub = await storage.isCloundSubscription();
-
-      cloudSub != null ? await upladEventApi() : await uploadEventLocal();
+      final stampselect = context.read<StampProvider>().stemp ?? context.read<PassportProvider>().stemp;
+      if (stampselect != null) {
+        if (context.read<UserProvider>().localUser != null &&
+            context.read<UserProvider>().localUser!.cloudSubscription == true) {
+          upladEventApi();
+        } else {
+          uploadEventLocal();
+        }
+      }
     }
   }
 
   upladEventApi() async {
+    EasyLoading.show(status: "Loading..");
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     String name = titleController.text;
     String placeName = cityController.text;
@@ -586,9 +590,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
     String hotelName = hotelController.text;
     List<String> companionsNames = companionsController.text.split(',');
     String aboutTrip = descriptionsController.text;
-    String stamp = context.read<StampProvider>().stemp ?? '';
+    String stamp = context.read<StampProvider>().stemp ?? context.read<PassportProvider>().stemp ?? '';
     String title = imageTitleController.text;
-    List<String> imagePaths = images.map((images) => images.path).toList();
 
     List<String> imagesUploaded = await uploadImagesToFirebase(images);
 
@@ -612,50 +615,71 @@ class _AddTripScreenState extends State<AddTripScreen> {
         imageTitle: title);
 
     try {
-      await eventRepository.saveEvent(newEvent, timestamp.toString());
-      EasyLoading.showSuccess("Trip created successfully!");
-      Navigator.pushNamedAndRemoveUntil(context, homeScreenRoute, (route) => false);
+      int date2020 = DateTime(2020, 1, 1).millisecondsSinceEpoch;
+      if (
+          dateStart < date2020 &&
+              context.read<UserProvider>().localUser != null &&
+              context.read<UserProvider>().localUser!.cloudSubscription &&
+              context.read<UserProvider>().localUser!.unlimitedTripSubscription == false) {
+
+              
+                print(dateStart < date2020 );
+                print(context.read<UserProvider>().localUser != null );
+                print(context.read<UserProvider>().localUser!.cloudSubscription );
+                print(context.read<UserProvider>().localUser!.unlimitedTripSubscription == false );
+        EasyLoading.showInfo("please buy subscription for uploading before 2020 evetns! ");
+      } else {
+        await eventRepository.saveEvent(newEvent, timestamp.toString());
+        EasyLoading.showSuccess("Trip created successfully!");
+        Navigator.pushNamedAndRemoveUntil(context, homeScreenRoute, (route) => false);
+      }
     } catch (e) {
       EasyLoading.showError('Failed to create trip: $e');
       log(e.toString());
     }
   }
 
+
+
+
   uploadEventLocal() async {
-    int timestamp = DateTime.now().millisecondsSinceEpoch;
-    String name = titleController.text;
-    String placeName = cityController.text;
-    String tripName = titleController.text;
-    String location = '${cityController.text}, ${countryController.text}';
-    int dateStart = selectedStartDate ?? DateTime.now().millisecondsSinceEpoch;
-    int dateEnd = selectedEndDate ?? DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch;
-    String hotelName = hotelController.text;
-    List<String> companionsNames = companionsController.text.split(',');
-    String aboutTrip = descriptionsController.text;
-    String stamp = context.read<StampProvider>().stemp ?? '';
-    String title = imageTitleController.text;
-    List<String> imagePaths = images.map((images) => images.path).toList();
-
-    EventLocalDBModel newEvent = EventLocalDBModel(
-        timestamp: timestamp,
-        name: name,
-        images: imagePaths,
-        placeName: placeName,
-        userName: storage.user!.userName,
-        userId: storage.user!.userId,
-        userImage: storage.user!.userImg,
-        userLocation: "${storage.user!.city}, ${storage.user!.country}",
-        tripName: tripName,
-        location: location,
-        dateStart: dateStart,
-        dateEnd: dateEnd,
-        hotelName: hotelName,
-        companionsNames: companionsNames,
-        aboutTrip: aboutTrip,
-        stamp: stamp,
-        imageTitle: title);
-
     try {
+      EasyLoading.show(status: "Loading..");
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      String name = titleController.text;
+      String placeName = cityController.text;
+      String tripName = titleController.text;
+      String location = '${cityController.text}, ${countryController.text}';
+      int dateStart = selectedStartDate ?? DateTime.now().millisecondsSinceEpoch;
+      int dateEnd = selectedEndDate ?? DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch;
+      String hotelName = hotelController.text;
+      List<String> companionsNames = companionsController.text.split(',');
+      String aboutTrip = descriptionsController.text;
+      String stamp = context.read<StampProvider>().stemp ?? context.read<PassportProvider>().stemp ?? '';
+      String title = imageTitleController.text;
+      List<String> imagePaths = images.map((images) => images.path).toList();
+
+      log("${imagePaths}");
+
+      EventLocalDBModel newEvent = EventLocalDBModel(
+          timestamp: timestamp,
+          name: name,
+          images: imagePaths,
+          placeName: placeName,
+          // userName: storage.user!.userName,
+          //  userId: storage.user!.userId,
+          //  userImage: storage.user!.userImg,
+          // userLocation: "${storage.user!.city}, ${storage.user!.country}",
+          tripName: tripName,
+          location: location,
+          dateStart: dateStart,
+          dateEnd: dateEnd,
+          hotelName: hotelName,
+          companionsNames: companionsNames,
+          aboutTrip: aboutTrip,
+          stamp: stamp,
+          imageTitle: title);
+
       await HiveService.addEvent(newEvent);
       EasyLoading.showSuccess("Trip created successfully!");
       Navigator.pushNamedAndRemoveUntil(context, homeScreenRoute, (route) => false);

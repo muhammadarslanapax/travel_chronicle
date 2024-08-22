@@ -74,13 +74,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       loginScreenRoute,
                                       (route) => false,
-                                    );
-                                    context.read<UserProvider>().logout();
+                                    ).then((val) {
+                                      context.read<UserProvider>().logout();
+                                    });
                                   },
                                   child: const SizedBox(
                                     width: 30,
@@ -138,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                 image: AssetImage(
-                                  "assets/dummyImage.png",
+                                  "assets/profile.png",
                                 ),
                               ),
                             ));

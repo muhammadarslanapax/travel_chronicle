@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // To parse this JSON data, do
 //
 //     final stampModel = stampModelFromJson(jsonString);
@@ -43,4 +44,58 @@ class StampModel {
       stamp: data["stamp"],
     );
   }
+}
+
+// passoort
+
+class PassportModel {
+  String stamp;
+  PassportModel({
+    required this.stamp,
+  });
+
+  PassportModel copyWith({
+    String? stamp,
+  }) {
+    return PassportModel(
+      stamp: stamp ?? this.stamp,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'stamp': stamp,
+    };
+  }
+
+  factory PassportModel.fromMap(Map<String, dynamic> map) {
+    return PassportModel(
+      stamp: map['stamp'] as String,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory PassportModel.fromJson(String source) => PassportModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() => 'PassportModel(stamp: $stamp)';
+
+  @override
+  bool operator ==(covariant PassportModel other) {
+    if (identical(this, other)) return true;
+
+    return other.stamp == stamp;
+  }
+
+  factory PassportModel.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    return PassportModel(
+      stamp: data["stamp"],
+    );
+  }
+
+  @override
+  int get hashCode => stamp.hashCode;
 }

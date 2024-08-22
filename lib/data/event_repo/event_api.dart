@@ -113,25 +113,63 @@ class EventApi implements IEventRepository {
   }
 
   @override
-  Future<List<String>?> getAllPassport() async {
+  Future<List<PassportModel>?> getAllPassport() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    List<String> stamps = [];
 
     try {
       QuerySnapshot querySnapshot = await firestore.collection('stamps').get();
 
-      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-        List<dynamic> stamp = doc['stamp'];
+      List<PassportModel> passport = querySnapshot.docs.map((doc) {
+        return PassportModel.fromDocument(doc);
+      }).toList();
 
-        stamps.addAll(stamp.cast<String>());
-      }
-
-      return stamps;
+      return passport;
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching stemps: $e');
       }
       return null;
+    }
+  }
+
+  @override
+  Future<void> saveClaimTicket(String ticketUrl) async {
+    try {
+      await FirebaseFirestore.instance.collection('stamps').add({"stamp": ticketUrl});
+      if (kDebugMode) {
+        print('ticket saved successfully');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('ticket saving event: $e');
+      }
+    }
+  }
+
+  @override
+  Future<void> saveAllEvents(List<EventModel> list) async {
+    final firebase = FirebaseFirestore.instance;
+
+    try {
+      for (var j in list) {
+        EventModel i = j;
+        i.userId = storage.user!.userId;
+        i.userImage = storage.user!.userImg;
+        i.userName = storage.user!.userName;
+        i.userLocation = "${storage.user!.city}, ${storage.user!.city}";
+        i.images = [
+          "https://www.shutterstock.com/image-illustration/no-picture-available-placeholder-thumbnail-260nw-2179364083.jpg"
+        ];
+
+        await firebase.collection('events').doc(i.timestamp.toString()).set(i.toMap());
+      }
+      if (kDebugMode) {
+        print('Events saved successfully');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saving event: $e');
+      }
     }
   }
 }
@@ -162,4 +200,29 @@ Future<List<String>> uploadImagesToFirebase(List<File> imageFiles) async {
   }
 
   return imageUrls;
+}
+
+Future<String> uploadImageToFirebase(Uint8List imageFile) async {
+  var downloadUrl;
+
+  try {
+    Reference reference =
+        FirebaseStorage.instance.ref().child('files/${DateTime.now().millisecondsSinceEpoch.toString()}');
+    await reference.putData(imageFile);
+    downloadUrl = await reference.getDownloadURL();
+    if (kDebugMode) {
+      print(downloadUrl);
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error uploading image: $e');
+    }
+    if (e is FirebaseException && e.code == 'unknown') {
+      if (kDebugMode) {
+        print('Error code: ${e.code}, message: ${e.message}');
+      }
+    }
+  }
+
+  return downloadUrl;
 }

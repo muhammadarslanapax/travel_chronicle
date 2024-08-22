@@ -1,4 +1,6 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +9,9 @@ import 'package:travel_chronicle/models/event_model.dart';
 import 'package:travel_chronicle/provider/delete_provider.dart';
 import 'package:travel_chronicle/provider/edit_provider.dart';
 import 'package:travel_chronicle/provider/home_provider.dart';
+import 'package:travel_chronicle/provider/location_provider.dart';
 import 'package:travel_chronicle/provider/stapm_provider.dart';
+import 'package:travel_chronicle/provider/user_provider.dart';
 import 'package:travel_chronicle/utilities/app_colors.dart';
 import 'package:travel_chronicle/utilities/app_routes.dart';
 import 'package:travel_chronicle/utilities/date_formeter.dart';
@@ -26,89 +30,177 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final EventModel _eventModel = context.read<HomeProvider>().eventModel!;
+    final provider = context.read<UserProvider>();
 
     return Scaffold(
       backgroundColor: skinColor,
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 490,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(_eventModel.images[0]),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.white,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+            Consumer<UserProvider>(
+              builder: (context, provider, child) {
+                if (provider.localUser != null && provider.localUser!.cloudSubscription) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 490,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(_eventModel.images[0]),
+                        fit: BoxFit.cover,
                       ),
-                      Text(
-                        _eventModel.imageTitle!,
-                        style: fifteen500TextStyle(
-                          color: Colors.white,
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 40,
                         ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  _eventModel.images.length > 1
-                      ? Container(
-                          height: 54,
-                          width: 196,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(7.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              for (int i = 1; i < _eventModel.images.length; i++)
-                                Container(
-                                  width: 45,
-                                  height: 45,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(7.0),
-                                    image: DecorationImage(
-                                      image: NetworkImage(_eventModel.images[i]),
-                                      fit: BoxFit.cover,
-                                    ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.white,
                                   ),
-                                )
-                            ],
-                          ),
-                        )
-                      : const SizedBox(),
-                ],
-              ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.arrow_back,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              _eventModel.imageTitle!,
+                              style: fifteen500TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        _eventModel.images.length > 1
+                            ? Container(
+                                height: 54,
+                                width: 196,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(7.0),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    for (int i = 1; i < _eventModel.images.length; i++)
+                                      Container(
+                                        width: 45,
+                                        height: 45,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(7.0),
+                                          image: DecorationImage(
+                                            image: NetworkImage(_eventModel.images[i]),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      )
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 490,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: FileImage(File(_eventModel.images[0])),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.white,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.arrow_back,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              _eventModel.imageTitle!,
+                              style: fifteen500TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        _eventModel.images.length > 1 &&
+                                provider.localUser != null &&
+                                provider.localUser!.cloudSubscription == true
+                            ? Container(
+                                height: 54,
+                                width: 196,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(7.0),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    for (int i = 1; i < _eventModel.images.length; i++)
+                                      Container(
+                                        width: 45,
+                                        height: 45,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(7.0),
+                                          image: DecorationImage(
+                                            image: NetworkImage(_eventModel.images[i]),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      )
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
+                  );
+                }
+              },
             ),
             const SizedBox(
               height: 10,
@@ -125,21 +217,31 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                width: 45,
-                                height: 45,
-                                decoration: 
-                                
-                                
-                                
-                                BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: NetworkImage(_eventModel.userImage!),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
+                              provider.localUser != null &&
+                                      provider.localUser!.cloudSubscription &&
+                                      provider.localUser!.userImg.isNotEmpty
+                                  ? Container(
+                                      width: 45,
+                                      height: 45,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: NetworkImage(_eventModel.userImage!),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    )
+                                  : Container(
+                                      width: 45,
+                                      height: 45,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                              "assets/dummyImage.png",
+                                            ),
+                                          )),
+                                    ),
                               const SizedBox(
                                 width: 5,
                               ),
@@ -147,11 +249,15 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    _eventModel.userName!,
+                                    provider.localUser != null && provider.localUser!.cloudSubscription == true
+                                        ? _eventModel.userName!
+                                        : "MR ABC",
                                     style: twelve600TextStyle(color: textBrownColor),
                                   ),
                                   Text(
-                                    _eventModel.userLocation!,
+                                    provider.localUser != null && provider.localUser!.cloudSubscription == true
+                                        ? _eventModel.userLocation!
+                                        : "${context.watch<LocationProvider>().address.city}, ${context.watch<LocationProvider>().address.country}",
                                     style: eleven400TextStyle(color: textBrownColor),
                                   ),
                                 ],
@@ -301,14 +407,8 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           ],
         ),
       ),
-      
     );
-
-
-    
   }
-
-   
 
   void showDeleteConfirmationDialog(BuildContext context, String id) {
     showDialog(

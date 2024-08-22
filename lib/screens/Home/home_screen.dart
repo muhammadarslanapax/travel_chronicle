@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/provider/home_provider.dart';
+import 'package:travel_chronicle/provider/location_provider.dart';
 import 'package:travel_chronicle/provider/user_provider.dart';
+import 'package:travel_chronicle/screens/Home/ad/banner_ad.dart';
 import 'package:travel_chronicle/utilities/app_colors.dart';
 import 'package:travel_chronicle/utilities/app_routes.dart';
 import 'package:travel_chronicle/utilities/app_text_styles.dart';
 
 import '../../global_widgets/events_home_widget.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,9 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     context.read<HomeProvider>().fetchEvents();
-    context.read<HomeProvider>().loadAd();
+    context.read<LocationProvider>().checkAndRequestPermission();
   }
 
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,83 +40,167 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Stack(
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 170,
-                  decoration: BoxDecoration(
-                    color: darkSkinColor.withOpacity(0.72),
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 68,
-                      ),
-                      Text(
-                        storage.user!.userName,
-                        style: fifteen700TextStyle(
-                          color: textBrownColor,
-                        ),
-                      ),
-                      // const SizedBox(
-                      //   height: 5,
-                      // ),
-                      Text(
-                        "${storage.user!.city ?? ""}, ${storage.user!.country ?? "No Location Added"}",
-                        style: thirteen400SpacedTextStyle(
-                          color: textBrownColor,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Consumer<HomeProvider>(
-                              builder: (BuildContext context, provider, Widget? child) {
-                                return Text(
-                                  "${provider.events.length} Trips",
-                                  style: eleven400SpacedTextStyle(
-                                    color: textBrownColor,
-                                  ),
-                                );
-                              },
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, passportBookScreenRoute);
-                                  },
-                                  child: Image.asset(
-                                    "assets/passportIcon.png",
-                                    scale: 6,
-                                  ),
+                    width: MediaQuery.of(context).size.width,
+                    height: 170,
+                    decoration: BoxDecoration(
+                      color: darkSkinColor.withOpacity(0.72),
+                    ),
+                    child: Consumer<UserProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.localUser != null) {
+                          return Column(
+                            children: [
+                              const SizedBox(
+                                height: 68,
+                              ),
+                              Text(
+                                storage.user!.userName,
+                                style: fifteen700TextStyle(
+                                  color: textBrownColor,
                                 ),
-                                const SizedBox(
-                                  width: 20,
+                              ),
+                              // const SizedBox(
+                              //   height: 5,
+                              // ),
+                              Text(
+                                "${storage.user!.city ?? ""}, ${storage.user!.country ?? "No Location Added"}",
+                                style: thirteen400SpacedTextStyle(
+                                  color: textBrownColor,
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, settingsScreenRoute);
-                                  },
-                                  child: Image.asset(
-                                    "assets/settingsIcon.png",
-                                    scale: 4,
-                                  ),
+                              ),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Consumer<HomeProvider>(
+                                      builder: (BuildContext context, provider, Widget? child) {
+                                        return Text(
+                                          "${provider.events.length} Trips",
+                                          style: eleven400SpacedTextStyle(
+                                            color: textBrownColor,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (context.read<UserProvider>().localUser != null &&
+                                                context.read<UserProvider>().localUser!.cloudSubscription &&
+                                                context.read<UserProvider>().localUser!.unlockPassportSubscription) {
+                                              Navigator.pushNamed(context, passportBookScreenRoute);
+                                            } else {
+                                              EasyLoading.showInfo(
+                                                  "please buy Unlock Passport Book Subscription first!");
+                                            }
+                                          },
+                                          child: Image.asset(
+                                            "assets/passportIcon.png",
+                                            scale: 6,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.pushNamed(context, settingsScreenRoute);
+                                          },
+                                          child: Image.asset(
+                                            "assets/settingsIcon.png",
+                                            scale: 4,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                                const SizedBox(
-                                  width: 10,
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Column(
+                            children: [
+                              const SizedBox(
+                                height: 68,
+                              ),
+                              Text(
+                                "Mr ABC",
+                                style: fifteen700TextStyle(
+                                  color: textBrownColor,
                                 ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                              ),
+                              // const SizedBox(
+                              //   height: 5,
+                              // ),
+                              Text(
+                                "${context.watch<LocationProvider>().address.city}, ${context.watch<LocationProvider>().address.country}",
+                                style: thirteen400SpacedTextStyle(
+                                  color: textBrownColor,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Consumer<HomeProvider>(
+                                      builder: (BuildContext context, provider, Widget? child) {
+                                        return Text(
+                                          "${provider.events.length} Trips",
+                                          style: eleven400SpacedTextStyle(
+                                            color: textBrownColor,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.pushNamed(context, passportBookScreenRoute);
+                                          },
+                                          child: Image.asset(
+                                            "assets/passportIcon.png",
+                                            scale: 6,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.pushNamed(context, settingsScreenRoute);
+                                          },
+                                          child: Image.asset(
+                                            "assets/settingsIcon.png",
+                                            scale: 4,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    )),
                 Positioned(
                   bottom: 5,
                   left: 0,
@@ -141,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                 image: AssetImage(
-                                  "assets/dummyImage.png",
+                                  "assets/profile.png",
                                 ),
                               ),
                             ));
@@ -193,22 +280,9 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          Consumer<HomeProvider>(
-            builder: (BuildContext context, provider, Widget? child) {
-              if (provider.bannerAd != null) {
-                return Container(
-                    width: provider.bannerAd!.size.width.toDouble(),
-                    height: provider.bannerAd!.size.height.toDouble(),
-                    decoration: BoxDecoration(
-                      color: darkSkinColor.withOpacity(0.72),
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: AdWidget(ad: provider.bannerAd!));
-              } else {
-                return const SizedBox();
-              }
-            },
-          ),
+        
+
+          const BannerAD(),
         ],
       ),
     );

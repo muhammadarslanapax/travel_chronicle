@@ -1,13 +1,23 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_chronicle/data/event_repo/event_api.dart';
+import 'package:travel_chronicle/data/locator.dart';
 import 'package:travel_chronicle/global_widgets/app_bar_widget.dart';
 import 'package:travel_chronicle/provider/home_provider.dart';
+import 'package:travel_chronicle/provider/location_provider.dart';
 import 'package:travel_chronicle/provider/passport_provider.dart';
 import 'package:travel_chronicle/utilities/app_colors.dart';
 import '../../global_widgets/small_button_widget.dart';
 import '../../utilities/app_text_styles.dart';
+import 'package:image_watermark/image_watermark.dart';
+
+import 'package:image/image.dart' as img;
 
 class PassportBookScreen extends StatefulWidget {
   const PassportBookScreen({super.key});
@@ -17,12 +27,15 @@ class PassportBookScreen extends StatefulWidget {
 }
 
 class _PassportBookScreenState extends State<PassportBookScreen> {
+  Uint8List? _image;
 
   @override
   void initState() {
+    _addWatermarkAndUpload(context.read<LocationProvider>().address.country, _getCurrentDate());
+
     context.read<PassportProvider>().fetchPassports();
     context.read<HomeProvider>().createInterstitialAd();
-    
+
     super.initState();
   }
 
@@ -59,8 +72,11 @@ class _PassportBookScreenState extends State<PassportBookScreen> {
                             height: 90,
                             decoration: BoxDecoration(
                               color: darkSkinColor,
-                              image: const DecorationImage(
-                                image: AssetImage("assets/dummyStampImage.png"),
+                              image: DecorationImage(
+                                image: _image != null
+                                    ? MemoryImage(_image!)
+                                    : const AssetImage("assets/IMMIGRATION Travel Chronicle.png")
+                                        as ImageProvider<Object>,
                                 fit: BoxFit.cover,
                               ),
                               borderRadius: BorderRadius.circular(15.0),
@@ -86,8 +102,8 @@ class _PassportBookScreenState extends State<PassportBookScreen> {
                                       height: 30,
                                       text: "CLAIM",
                                       onTap: () {
+                                        _cleadTicket(_image);
                                         _showInterstitialAd();
-
                                       },
                                       textStyle: eighteenBoldTextStyle(color: Colors.white),
                                       containerColor: brownColor,
@@ -133,16 +149,24 @@ class _PassportBookScreenState extends State<PassportBookScreen> {
                             mainAxisSpacing: 10, crossAxisSpacing: 10, crossAxisCount: 3),
                         itemBuilder: (context, index) {
                           final image = provider.passport[index];
-                          return Container(
-                            width: 90,
-                            height: 90,
-                            decoration: BoxDecoration(
-                              color: darkSkinColor,
-                              image: DecorationImage(
-                                image: NetworkImage(image),
-                                fit: BoxFit.cover,
+                          return GestureDetector(
+                            onTap: () {
+                              context.read<PassportProvider>().setSelectedStamp(image.stamp);
+                              context.read<PassportProvider>().setselected(index);
+                            },
+                            child: Container(
+                              width: 90,
+                              height: 90,
+                              decoration: BoxDecoration(
+                                color: darkSkinColor,
+                                border: Border.all(
+                                    width: 1, color: provider.getselected == index ? brownColor : Colors.transparent),
+                                image: DecorationImage(
+                                  image: NetworkImage(image.stamp),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
                               ),
-                              borderRadius: BorderRadius.circular(15.0),
                             ),
                           );
                         },
@@ -158,7 +182,15 @@ class _PassportBookScreenState extends State<PassportBookScreen> {
     );
   }
 
-
+  Future<void> _addWatermarkAndUpload(String country, String date) async {
+    // Load the image asset as ByteData
+    ByteData data = await rootBundle.load('assets/IMMIGRATION Travel Chronicle.png');
+    Uint8List bytes = data.buffer.asUint8List();
+    final watermarkedImg = await ImageWatermark.addTextWatermark(
+        dstX: 130, dstY: 200, imgBytes: bytes, watermarkText: '$country\n$date', color: brownColor);
+    _image = watermarkedImg;
+    setState(() {});
+  }
 
   void _showInterstitialAd() {
     if (context.read<HomeProvider>().interstitialAd == null) {
@@ -174,21 +206,37 @@ class _PassportBookScreenState extends State<PassportBookScreen> {
           print('$ad onAdDismissedFullScreenContent.');
         }
         ad.dispose();
-       context.read<HomeProvider>().  createInterstitialAd();
+        context.read<HomeProvider>().createInterstitialAd();
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         if (kDebugMode) {
           print('$ad onAdFailedToShowFullScreenContent: $error');
         }
         ad.dispose();
-        context.read<HomeProvider>().  createInterstitialAd();
+        context.read<HomeProvider>().createInterstitialAd();
       },
     );
     context.read<HomeProvider>().interstitialAd!.show();
     context.read<HomeProvider>().interstitialAd = null;
   }
 
+  _cleadTicket(Uint8List? image) async {
+    try {
+      String imageUploaded = await uploadImageToFirebase(image!);
+      await eventRepository.saveClaimTicket(imageUploaded);
+      context.read<PassportProvider>().fetchPassports();
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+}
 
+String _getCurrentDate() {
+  // Get the current date
+  DateTime now = DateTime.now();
 
+  // Format the date as 'yyyy-MM-dd'
+  String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
+  return formattedDate;
 }

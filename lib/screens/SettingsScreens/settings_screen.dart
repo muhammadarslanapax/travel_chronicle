@@ -5,11 +5,14 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:purchases_flutter/models/customer_info_wrapper.dart';
 import 'package:purchases_flutter/models/package_wrapper.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_chronicle/data/purchase_api.dart';
+import 'package:travel_chronicle/global_widgets/events_home_widget.dart';
+import 'package:travel_chronicle/provider/user_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../global_widgets/app_bar_widget.dart';
@@ -48,15 +51,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     image: Icons.person,
                     text: "My Account",
                     onTap: () {
-                      Navigator.pushNamed(context, profileScreenRoute);
+                      if (context.read<UserProvider>().localUser != null) {
+                        Navigator.pushNamed(context, profileScreenRoute);
+                      } else {
+                        Navigator.pushNamed(context, loginScreenRoute);
+                      }
                     },
                   ),
                   SettingsRowWidget(
                     image: Icons.shopping_cart_outlined,
                     text: "Shop",
                     onTap: () {
-                      Navigator.pushNamed(context, subscriptionScreenRoute);
-                      
+                      if (context.read<UserProvider>().localUser != null) {
+                        Navigator.pushNamed(context, subscriptionScreenRoute);
+                      } else {
+                        Navigator.pushNamed(context, loginScreenRoute);
+                      }
                     },
                   ),
                   SettingsRowWidget(
@@ -157,7 +167,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     Share.share(message);
   }
-
-  
-
 }
