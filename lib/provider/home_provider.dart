@@ -27,6 +27,8 @@ class HomeProvider extends ChangeNotifier {
 
   Future<void> fetchEvents() async {
     if (storage.user != null && storage.user!.cloudSubscription == true) {
+      
+      
       await fetchEventsfromApi();
     } else {
       await fetchEventsfromLocal();

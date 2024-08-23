@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -411,6 +412,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   }
 
   void showDeleteConfirmationDialog(BuildContext context, String id) {
+   
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -427,7 +429,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
             TextButton(
               child: const Text("Delete"),
               onPressed: () {
-               
                 context.read<DeleteProvider>().deleteEvent(context, id);
                 context.read<HomeProvider>().fetchEvents();
               },

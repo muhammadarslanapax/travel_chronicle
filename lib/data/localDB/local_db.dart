@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:travel_chronicle/data/localDB/event/event_model.dart';
@@ -31,8 +33,18 @@ class HiveService {
 
   static Future<void> deleteEvent(int index) async {
     var box = await Hive.openBox<EventLocalDBModel>(boxName);
-    await box.deleteAt(index);
+    for (int i = 0; i < box.length; i++) {
+      EventLocalDBModel? event = box.getAt(i);
+
+      if (event!.timestamp == index) {
+        // Delete the event at the found index
+        await box.deleteAt(i);
+        print('Event with timestamp $index deleted successfully.');
+        return; // Exit after deleting the first matching event
+      }
+    }
   }
+
   static Future<void> deleteAllEvents() async {
     var box = await Hive.openBox<EventLocalDBModel>(boxName);
     await box.clear();

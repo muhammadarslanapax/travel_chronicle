@@ -670,7 +670,10 @@ class _EditTripScreenState extends State<EditTripScreen> {
           context.read<UserProvider>().localUser!.cloudSubscription == true) {
         editEventAPi(context, evenId);
       } else {
-        editEventLocal(context, evenId);
+        editEventLocal(
+          context,
+          evenId,
+        );
       }
     }
   }
@@ -715,7 +718,7 @@ class _EditTripScreenState extends State<EditTripScreen> {
 
   editEventLocal(BuildContext context, String evenId) {
     EasyLoading.show(status: "Loading..");
-    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    int timestamp = context.read<EditProvider>().eventModel.timestamp;
     String name = titleController.text;
     String placeName = cityController.text;
     String title = imageTitleController.text;
@@ -734,10 +737,6 @@ class _EditTripScreenState extends State<EditTripScreen> {
         name: name,
         images: imagesUploaded,
         placeName: placeName,
-        userName: storage.user!.userName,
-        userId: storage.user!.userId,
-        userImage: storage.user!.userImg,
-        userLocation: storage.user!.city.toString() + storage.user!.country.toString(),
         tripName: tripName,
         location: location,
         dateStart: dateStart,

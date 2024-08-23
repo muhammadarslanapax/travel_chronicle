@@ -56,6 +56,7 @@ class EditProvider extends ChangeNotifier {
 
   editEventLocal(context, EventLocalDBModel event, int timestamp) async {
     try {
+
       await HiveService.updateEvent(timestamp, event);
       EasyLoading.showSuccess("Trip created successfully!");
       Navigator.pushNamedAndRemoveUntil(context, homeScreenRoute, (route) => false);
