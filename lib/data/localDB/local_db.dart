@@ -49,4 +49,5 @@ class HiveService {
     var box = await Hive.openBox<EventLocalDBModel>(boxName);
     await box.clear();
   }
+
 }
